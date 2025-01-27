@@ -68,6 +68,42 @@ def game():
             print("It's a draw")
             sys.exit()
 
+def computer():
+    #implementing minmax algorithm
+    is_game_won = False
+    #value = 0
+    is_player_maximizing = True
+    moves_left = 8
+    #!!!MAKE FUNCTION TAKE ARGUMENTS
+    #!!!FIGURE OUT HOW TO CHECK IF GAME HAS ENDED
+    #!!!KEEP TRACK OF HOW MANY MOVES HAS LEFT
+    def minimax():
+        #if the game has ended
+        #return the value of outcome
+        if (is_game_won):
+            return value
+
+        #if it's maximaizing player
+        #set value to -infinity
+        #for each move you can make call out minimax function
+        #and sign max value to variable of set numbers
+        #return the value
+        if(is_player_maximizing):
+            value = float('-inf')
+            for x in range(moves_left):
+                value = max(value, minimax())
+            return value
+        
+        #if it's minimaizing player
+        #set value to infinity
+        #for each move you can make call out minimax function
+        #and sign min value to variable of set numbers
+        #return the value
+        else:
+            value = float('inf')
+            for x in range(moves_left):
+                value = min(value, minimax())
+            return value
 
 
 
