@@ -64,13 +64,14 @@ def player(player_moves, which_player, move):
         else:
             charackter = "X"
         #taking input from players
-        player = int(input("Player"+ str(which_player) + " - Enter where would you like to put"+charackter+":"))
+        player = int(input("Player"+ str(which_player) + " - Enter where would you like to put "+charackter+":"))
         #!!!TO DO checking input from the player
         #keep track of player moves
         player_moves.append(player)
         updating_board(player, which_player)
         move-=1
-        is_game_over(move, player_moves, 1)
+        is_game_over(move, player_moves, which_player)
+        return move, player_moves
 
 def game():
     #creating a board
@@ -90,8 +91,8 @@ def game():
     #endless loop for a game
     while True:
 
-        player(st_player_moves, 1, m)
-        player(nd_player_moves, 2, m)
+        m, st_player_moves = player(st_player_moves, 1, m)
+        m, nd_player_moves = player(nd_player_moves, 2, m)
 
         #handling input from user
         #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
