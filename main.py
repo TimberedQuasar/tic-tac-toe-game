@@ -55,6 +55,22 @@ def is_game_over(moves_left, player_moves, which_player):
         sys.exit()
     else:
         return None
+    
+#handling player movement
+def player(player_moves, which_player, move):
+        printing_out_board()
+        if(which_player==1):
+            charackter = "O"
+        else:
+            charackter = "X"
+        #taking input from players
+        player = int(input("Player"+ str(which_player) + " - Enter where would you like to put"+charackter+":"))
+        #!!!TO DO checking input from the player
+        #keep track of player moves
+        player_moves.append(player)
+        updating_board(player, which_player)
+        move-=1
+        is_game_over(move, player_moves, 1)
 
 def game():
     #creating a board
@@ -73,23 +89,9 @@ def game():
 
     #endless loop for a game
     while True:
-        printing_out_board()
-        #taking input from players
-        player_one = int(input("Player1 - Enter where would you like to put O:"))
-        #!!!TO DO checking input from the player
-        #keep track of player moves
-        st_player_moves.append(player_one)
-        updating_board(player_one, 1)
-        m-=1
-        is_game_over(m, st_player_moves, 1)
 
-        printing_out_board()
-        player_two = int(input("Player2 - Enter where would you like to put X:"))
-        #!!!TO DO checking input from the player
-        nd_player_moves.append(player_two)
-        updating_board(player_two, 2)
-        m-=1
-        is_game_over(m, nd_player_moves, 2)
+        player(st_player_moves, 1, m)
+        player(nd_player_moves, 2, m)
 
         #handling input from user
         #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
@@ -109,19 +111,21 @@ def minimax(moves_left, first_player_moves, second_player_moves):
     #!!!KEEP TRACK OF HOW MANY MOVES HAS LEFT
     #if the game has ended
     #return the value of outcome
-    game_over, who_won = check_win(moves_left, first_player_moves, second_player_moves)
-    if (game_over):
-        if (who_won == 1):
+    if(moves_left%2 != 0):
+        is_player_maximizing = True
+        player_moves = first_player_moves
+    else:
+        is_player_maximizing = False
+        player_moves = second_player_moves
+
+    if (check_win(moves_left, player_moves)):
+        if (is_player_maximizing):
             return 1
-        elif (who_won == 2):
+        elif (is_player_maximizing == False):
             return -1
         else:
             return 0
         
-    if(moves_left%2!=0):
-        is_player_maximizing = True
-    else:
-        is_player_maximizing = False
     #if it's maximaizing player
     #set value to -infinity
     #for each move you can make call out minimax function
