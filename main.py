@@ -12,7 +12,7 @@ def game():
     st_player_moves = []
     nd_player_moves = []
 
-    #keep track of moves lefet
+    #keep track of how many moves left
     m = 9
 
     #endless loop for a game
@@ -27,14 +27,7 @@ def game():
 
         updating_board(player_one, 1)
         m-=1
-        is_game_ended, who_won = check_win(m, st_player_moves, nd_player_moves)
-        if(is_game_ended and who_won > 0):
-            print("Player"+str(who_won)+ " won")
-            sys.exit()
-        else:
-            print("It's a draw")
-            sys.exit()
-
+        is_game_over(m, st_player_moves, nd_player_moves)
         printing_out_board()
 
         player_two = int(input("Player2 - Enter where would you like to put X:"))
@@ -43,13 +36,7 @@ def game():
 
         updating_board(player_one, 2)
         m-=1
-        is_game_ended, who_won = check_win(m, st_player_moves, nd_player_moves)
-        if(is_game_ended and who_won > 0):
-            print("Player"+str(who_won)+ " won")
-            sys.exit()
-        else:
-            print("It's a draw")
-            sys.exit()
+        is_game_over(m, st_player_moves, nd_player_moves)
 
         #handling input from user
         #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
@@ -60,8 +47,6 @@ def game():
         #        diff = False
         #    else:
         #        player_two = int(input("Player2 - Enter again where would you like to put X:"))
-
-
 
 game()
 
@@ -147,3 +132,13 @@ def check_win(moves_left, first_player_moves, second_player_moves):
             return True, 0
     else:
         return False, 0
+
+#printing out who won
+def is_game_over(moves_left, first_player_moves, second_player_moves):
+    is_game_ended, who_won = check_win(moves_left, first_player_moves, second_player_moves)
+    if(is_game_ended and who_won > 0):
+        print("Player"+str(who_won)+ " won")
+        sys.exit()
+    else:
+        print("It's a draw")
+        sys.exit()
