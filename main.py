@@ -1,5 +1,57 @@
 import sys, os
 
+#printing out a board
+def printing_out_board():
+    os.system('cls')
+    for x in board:
+        print (x)
+
+#checking where to put O and X
+def updating_board(where_to_put_mark, which_player_move):
+        if(which_player_move==1):
+            charackter = "O"
+        else: 
+            charackter = "X"
+
+        if(where_to_put_mark<4):
+            st_row[where_to_put_mark-1] = charackter
+        elif(where_to_put_mark<7):
+            nd_row[where_to_put_mark-4] = charackter
+        else:
+            rd_row[where_to_put_mark-7] = charackter
+
+#function checking if game has ended
+#return true if game has ended and number of player who won
+#!!! CREATE BETTER CHECKING IF SOMEONE WON
+#!!! WHAT IF LIST WILL HAVE SOMETHING LIKE (1,4,2,3)
+def check_win(moves_left, player_moves):
+    #condition to win a game
+    cond =  ([1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7])
+
+    if (moves_left<=4):
+        for x in cond:
+            if(all(number in player_moves for number in x)):
+                return True
+            
+    elif(moves_left==0):    
+        return True
+    else:
+        return False
+
+#printing out who won
+def is_game_over(moves_left, player_moves, which_player):
+    is_game_ended = check_win(moves_left, player_moves)
+    if (is_game_ended):
+        printing_out_board()
+        print("Player"+str(which_player)+ " won")
+        sys.exit()
+    elif(is_game_ended and moves_left == 0):
+        printing_out_board()
+        print("It's a draw")
+        sys.exit()
+    else:
+        print('')
+
 def game():
     #creating a board
     global st_row, nd_row, rd_row, board
@@ -27,16 +79,16 @@ def game():
 
         updating_board(player_one, 1)
         m-=1
-        is_game_over(m, st_player_moves, nd_player_moves)
+        is_game_over(m, st_player_moves, 1)
         printing_out_board()
 
         player_two = int(input("Player2 - Enter where would you like to put X:"))
         #!!!TO DO checking input from the player
         nd_player_moves.append(player_two)
 
-        updating_board(player_one, 2)
+        updating_board(player_two, 2)
         m-=1
-        is_game_over(m, st_player_moves, nd_player_moves)
+        is_game_over(m, nd_player_moves, 2)
 
         #handling input from user
         #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
@@ -53,27 +105,25 @@ game()
 #function for a computer player
 #def computer():
 
-#printing out a board
-def printing_out_board():
-    os.system('cls')
-    for x in board:
-        print (x)
-
 #implementing minmax algorithm
 def minimax(moves_left, first_player_moves, second_player_moves):
     #!!!MAKE FUNCTION TAKE ARGUMENTS
     #!!!KEEP TRACK OF HOW MANY MOVES HAS LEFT
     #if the game has ended
     #return the value of outcome
-
+    game_over, who_won = check_win(moves_left, first_player_moves, second_player_moves)
+    if (game_over):
+        if (who_won == 1):
+            return 1
+        elif (who_won == 2):
+            return -1
+        else:
+            return 0
+        
     if(moves_left%2!=0):
         is_player_maximizing = True
     else:
         is_player_maximizing = False
-        
-    if (check_win(moves_left, first_player_moves, second_player_moves)[0]):
-        return value
-
     #if it's maximaizing player
     #set value to -infinity
     #for each move you can make call out minimax function
@@ -97,48 +147,3 @@ def minimax(moves_left, first_player_moves, second_player_moves):
             moves_left -= 1
             value = min(value, minimax(moves_left, first_player_moves, second_player_moves))
         return value
-
-#checking where to put O and X
-def updating_board(where_to_put_mark, which_player_move):
-        if(which_player_move==1):
-            charackter = "O"
-        else: 
-            charackter = "X"
-
-        if(where_to_put_mark<4):
-            st_row[where_to_put_mark-1] = charackter
-        elif(where_to_put_mark<7):
-            nd_row[where_to_put_mark-4] = charackter
-        else:
-            rd_row[where_to_put_mark-7] = charackter
-
-#function checking if game has ended
-#return true if game has ended and number of player who won
-#!!!CREATE BETTER CHECKING FOR GAME ENDING IN DRAW
-def check_win(moves_left, first_player_moves, second_player_moves):
-    #condition to win a game
-    cond =  ([1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7])
-
-    if (moves_left<=4):
-        first_player_moves.sort()
-        second_player_moves.sort()
-        for x in [first_player_moves, second_player_moves]:
-            i=1
-            for y in cond:
-                if x == y:
-                    return True, i
-            i+=1
-        if(moves_left==0):    
-            return True, 0
-    else:
-        return False, 0
-
-#printing out who won
-def is_game_over(moves_left, first_player_moves, second_player_moves):
-    is_game_ended, who_won = check_win(moves_left, first_player_moves, second_player_moves)
-    if(is_game_ended and who_won > 0):
-        print("Player"+str(who_won)+ " won")
-        sys.exit()
-    else:
-        print("It's a draw")
-        sys.exit()
