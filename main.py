@@ -8,24 +8,24 @@ def printing_out_board():
         print (x)
 
 #updating board
-def updating_board(where_to_put_mark, which_player_move):
+def updating_board(where_to_put_mark: int, which_player_move: int):
         #define which player has moved
-        if(which_player_move==1):
+        if(which_player_move == 1):
             charackter = "O"
         else: 
             charackter = "X"
 
         #defing where to put charackter on the board
-        if(where_to_put_mark<4):
-            st_row[where_to_put_mark-1] = charackter
-        elif(where_to_put_mark<7):
-            nd_row[where_to_put_mark-4] = charackter
+        if(where_to_put_mark < 4):
+            st_row[where_to_put_mark - 1] = charackter
+        elif(where_to_put_mark < 7):
+            nd_row[where_to_put_mark - 4] = charackter
         else:
-            rd_row[where_to_put_mark-7] = charackter
+            rd_row[where_to_put_mark - 7] = charackter
 
 #function checking if game has ended
 #return true if game has ended
-def check_win(moves_left, player_moves):
+def check_win(moves_left: int, player_moves: list):
     #conditions to win a game
     cond =  ([1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7])
 
@@ -42,7 +42,7 @@ def check_win(moves_left, player_moves):
         return False
 
 #printing out who won
-def is_game_over(moves_left, player_moves, which_player):
+def is_game_over(moves_left: int, player_moves: list, which_player: int):
     #checking is game over
     is_game_ended = check_win(moves_left, player_moves)
     if (is_game_ended):
@@ -57,7 +57,7 @@ def is_game_over(moves_left, player_moves, which_player):
         return None
     
 #handling player movement
-def player(player_moves, which_player, move):
+def player(player_moves: list, which_player: int, move: int):
         printing_out_board()
         if(which_player==1):
             charackter = "O"
@@ -69,9 +69,8 @@ def player(player_moves, which_player, move):
         #keep track of player moves
         player_moves.append(player)
         updating_board(player, which_player)
-        move-=1
         is_game_over(move, player_moves, which_player)
-        return move, player_moves
+        return move-1, player_moves
 
 def game():
     #creating a board
@@ -91,8 +90,15 @@ def game():
     #endless loop for a game
     while True:
 
-        m, st_player_moves = player(st_player_moves, 1, m)
-        m, nd_player_moves = player(nd_player_moves, 2, m)
+        #letting player decide vs who he wants to play
+        option = int(input("Would like to play with other player(1) or computer(2)?"))
+
+        if(option == 1):
+            m, st_player_moves = player(st_player_moves, 1, m)
+            m, nd_player_moves = player(nd_player_moves, 2, m)
+        else:
+            m, st_player_moves = player(st_player_moves, 1, m)
+            #m, nd_player_moves = minimax(m, st_player_moves, nd_player_moves)
 
         #handling input from user
         #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
@@ -107,46 +113,62 @@ def game():
 game()
 
 #implementing minmax algorithm
-def minimax(moves_left, first_player_moves, second_player_moves):
-    #!!!MAKE FUNCTION TAKE ARGUMENTS
-    #!!!KEEP TRACK OF HOW MANY MOVES HAS LEFT
-    #if the game has ended
-    #return the value of outcome
+def minimax(moves_left: int, first_player_moves: list, second_player_moves: list):
+    #if the game has ended return the value of outcome and the best current move
+
+    #list o movemnts you can make
+    available_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    available_moves = [x for x in available_moves if x not in first_player_moves and x not in second_player_moves]
+
+    #checking which player whill be moving
     if(moves_left%2 != 0):
         is_player_maximizing = True
         player_moves = first_player_moves
     else:
         is_player_maximizing = False
         player_moves = second_player_moves
+    
+    game_over = check_win(moves_left, player_moves)
 
-    if (check_win(moves_left, player_moves)):
+    if (game_over and moves_left > 0 ):
         if (is_player_maximizing):
-            return 1
-        elif (is_player_maximizing == False):
-            return -1
+            return 1, player_moves[-1]
         else:
-            return 0
-        
+            return -1, player_moves[-1]
+    elif (game_over and moves_left == 0):
+        return 0, player_moves[-1]
+    else:
+    
     #if it's maximaizing player
     #set value to -infinity
     #for each move you can make call out minimax function
     #and sign max value to variable of set numbers
     #return the value
-    if(is_player_maximizing):
         value = float('-inf')
-        for x in range(moves_left):
-            moves_left -= 1
-            value = max(value, minimax(moves_left, first_player_moves, second_player_moves))
-        return value
+        best_move = None
+        if(is_player_maximizing):
+            
+            for x in range(moves_left):
+                player_moves.append(available_moves[x])
+                data = minimax(moves_left-1, first_player_moves, second_player_moves)
+                value = max(value, data[0])
+                best_move = data[1]
+                player_moves.pop()
+            return value, best_move
+    
         
     #if it's minimaizing player
     #set value to infinity
     #for each move you can make call out minimax function
     #and sign min value to variable of set numbers
     #return the value
-    else:
-        value = float('inf')
-        for x in range(moves_left):
-            moves_left -= 1
-            value = min(value, minimax(moves_left, first_player_moves, second_player_moves))
-        return value
+        else:
+            value = float('inf')
+            best_move = None
+            for x in range(moves_left):
+                player_moves.append(available_moves[x])
+                data = minimax(moves_left-1, first_player_moves, second_player_moves)
+                value = min(value, data[0])
+                best_move = data[1]
+                player_moves.pop()
+            return value, best_move
