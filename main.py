@@ -27,16 +27,16 @@ def updating_board(where_to_put_mark: int, which_player_move: int):
 #return true if game has ended
 def check_win(moves_left: int, player_moves: list):
     #conditions to win a game
-    cond =  ([1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7])
+    cond =  ([1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7])
 
     if (moves_left<=4):
         for x in cond:
             #verifying is player list of moves has numbers from conditions
             if(all(number in player_moves for number in x)):
                 return True
-
-    #handling game ending in draw 
-    elif(moves_left==0):    
+        return False
+    #handling game ending in draw
+    elif(moves_left==0):     
         return True
     else:
         return False
