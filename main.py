@@ -34,10 +34,11 @@ def check_win(moves_left: int, player_moves: list):
             #verifying is player list of moves has numbers from conditions
             if(all(number in player_moves for number in x)):
                 return True
-        return False
-    #handling game ending in draw
-    elif(moves_left==0):     
-        return True
+        #handling game ending in draw
+        if(moves_left == 0):
+            return "DRAW"
+        else:
+            return False
     else:
         return False
 
@@ -45,11 +46,11 @@ def check_win(moves_left: int, player_moves: list):
 def is_game_over(moves_left: int, player_moves: list, which_player: int):
     #checking is game over
     is_game_ended = check_win(moves_left, player_moves)
-    if (is_game_ended):
+    if (is_game_ended == True):
         printing_out_board()
         print("Player"+str(which_player)+ " won")
         sys.exit()
-    elif(is_game_ended and moves_left == 0):
+    elif(is_game_ended == "DRAW"):
         printing_out_board()
         print("It's a draw")
         sys.exit()
@@ -113,14 +114,14 @@ def game():
 game()
 
 #implementing minmax algorithm
-def minimax(moves_left: int, first_player_moves: list, second_player_moves: list):
-    #if the game has ended return the value of outcome and the best current move
+def minimax(current_depth: int, moves_left: int, first_player_moves: list, second_player_moves: list):
 
-    #list o movemnts you can make
+    #list o movements that can be make
     available_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     available_moves = [x for x in available_moves if x not in first_player_moves and x not in second_player_moves]
 
-    #checking which player whill be moving
+    #checking which player has moved
+    moves_left += 1
     if(moves_left%2 != 0):
         is_player_maximizing = True
         player_moves = first_player_moves
@@ -128,33 +129,45 @@ def minimax(moves_left: int, first_player_moves: list, second_player_moves: list
         is_player_maximizing = False
         player_moves = second_player_moves
     
+    moves_left -= 1
+    #checking if someone won -> if true return value of outcome and best current move
     game_over = check_win(moves_left, player_moves)
-
-    if (game_over and moves_left > 0 ):
+    if (game_over == True):
         if (is_player_maximizing):
-            return 1, player_moves[-1]
+            #!!! THIS MAKE SENS????????
+            return 10 - current_depth, player_moves[-1]
         else:
-            return -1, player_moves[-1]
-    elif (game_over and moves_left == 0):
+            return current_depth - 10, player_moves[-1]
+    elif (game_over == "DRAW"):
         return 0, player_moves[-1]
     else:
-    
+        #checking which player will be moving
+        if(moves_left%2 != 0):
+            is_player_maximizing = True
+            player_moves = first_player_moves
+        else:
+            is_player_maximizing = False
+            player_moves = second_player_moves
     #if it's maximaizing player
     #set value to -infinity
     #for each move you can make call out minimax function
     #and sign max value to variable of set numbers
     #return the value
-        value = float('-inf')
-        best_move = None
+
+        #set of rules for maximizing player
         if(is_player_maximizing):
-            
+            value = [float('-inf'), 0]
+
             for x in range(moves_left):
                 player_moves.append(available_moves[x])
-                data = minimax(moves_left-1, first_player_moves, second_player_moves)
-                value = max(value, data[0])
-                best_move = data[1]
+                data = minimax(current_depth+1, moves_left-1, first_player_moves, second_player_moves)
+                #if value does not change best move should also stay intact
+                #if player has a better outcome best move should stay intact
+                if(value[0] < max(value[0], data[0]) ):
+                    value[0] = max(value[0], data[0])
+                    value[1] = available_moves[x]
                 player_moves.pop()
-            return value, best_move
+            return value
     
         
     #if it's minimaizing player
@@ -162,13 +175,17 @@ def minimax(moves_left: int, first_player_moves: list, second_player_moves: list
     #for each move you can make call out minimax function
     #and sign min value to variable of set numbers
     #return the value
+
+        #set of rules for minimizing player
         else:
-            value = float('inf')
-            best_move = None
+            value = [float('inf'), 0]
+
             for x in range(moves_left):
                 player_moves.append(available_moves[x])
-                data = minimax(moves_left-1, first_player_moves, second_player_moves)
-                value = min(value, data[0])
-                best_move = data[1]
+                data = minimax(current_depth+1, moves_left-1, first_player_moves, second_player_moves)
+                if(value[0] > min(value[0], data[0])):
+                    value[0] = min(value[0], data[0])
+                    value[1] = available_moves[x]
                 player_moves.pop()
-            return value, best_move
+            return value
+    
