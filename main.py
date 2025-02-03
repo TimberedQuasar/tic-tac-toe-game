@@ -55,7 +55,7 @@ def is_game_over(moves_left: int, player_moves: list, which_player: int):
         print("It's a draw")
         sys.exit()
     else:
-        return None
+        return False
     
 #handling player movement
 def player(player_moves: list, which_player: int, move: int):
@@ -70,48 +70,9 @@ def player(player_moves: list, which_player: int, move: int):
         #keep track of player moves
         player_moves.append(player)
         updating_board(player, which_player)
+        move -=1
         is_game_over(move, player_moves, which_player)
-        return move-1, player_moves
-
-def game():
-    #creating a board
-    global st_row, nd_row, rd_row, board
-    st_row = [1,2,3]
-    nd_row = [4,5,6]
-    rd_row = [7,8,9]
-    board =[st_row,nd_row,rd_row]
-
-    #keep track of players moves
-    st_player_moves = []
-    nd_player_moves = []
-
-    #keep track of how many moves left
-    m = 9
-
-    #endless loop for a game
-    while True:
-
-        #letting player decide vs who he wants to play
-        option = int(input("Would like to play with other player(1) or computer(2)?"))
-
-        if(option == 1):
-            m, st_player_moves = player(st_player_moves, 1, m)
-            m, nd_player_moves = player(nd_player_moves, 2, m)
-        else:
-            m, st_player_moves = player(st_player_moves, 1, m)
-            #m, nd_player_moves = minimax(m, st_player_moves, nd_player_moves)
-
-        #handling input from user
-        #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
-        #!!!CREATE BETTER CHECKING FOR INPUT FROM USER!!!
-        #diff = True
-        #while diff:
-        #    if(player_one!=player_two and 0<player_one<10 and 0<player_two<10):
-        #        diff = False
-        #    else:
-        #        player_two = int(input("Player2 - Enter again where would you like to put X:"))
-
-game()
+        return move, player_moves
 
 #implementing minmax algorithm
 def minimax(current_depth: int, moves_left: int, first_player_moves: list, second_player_moves: list):
@@ -189,3 +150,46 @@ def minimax(current_depth: int, moves_left: int, first_player_moves: list, secon
                 player_moves.pop()
             return value
     
+
+def game():
+    #creating a board
+    global st_row, nd_row, rd_row, board
+    st_row = [1,2,3]
+    nd_row = [4,5,6]
+    rd_row = [7,8,9]
+    board =[st_row,nd_row,rd_row]
+
+    #keep track of players moves
+    st_player_moves = []
+    nd_player_moves = []
+
+    #keep track of how many moves left
+    m = 9
+
+    #letting player decide vs who he wants to play
+    option = int(input("Would like to play with other player(1) or computer(2)?"))
+
+    if(option==1):
+    #endless loop for a game
+        while True:
+            m, st_player_moves = player(st_player_moves, 1, m)
+            m, nd_player_moves = player(nd_player_moves, 2, m)
+    else:
+        while True:
+            m, st_player_moves = player(st_player_moves, 1, m)
+            nd_player_moves.append(minimax(0, m, st_player_moves, nd_player_moves)[1])
+            updating_board(nd_player_moves[-1], 2)
+            m -=1
+            is_game_over(m, nd_player_moves, 2)
+
+        #handling input from user
+        #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
+        #!!!CREATE BETTER CHECKING FOR INPUT FROM USER!!!
+        #diff = True
+        #while diff:
+        #    if(player_one!=player_two and 0<player_one<10 and 0<player_two<10):
+        #        diff = False
+        #    else:
+        #        player_two = int(input("Player2 - Enter again where would you like to put X:"))
+
+game()
