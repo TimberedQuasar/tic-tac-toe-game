@@ -64,7 +64,6 @@ def player(player_moves: list, which_player: int, move: int):
         else:
             charackter = "X"
         #taking input from players
-        possible_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         while True:
             try:
                 printing_out_board()
@@ -80,11 +79,10 @@ def player(player_moves: list, which_player: int, move: int):
                 os.system('cls')
                 print("Please input valid number for charackter to place")
                 time.sleep(2)
-        player = int(player)   
-        #!!!TO DO checking input from the player
         #keep track of player moves
         player_moves.append(player)
         updating_board(player, which_player)
+        possible_moves.remove(player)
         move -=1
         is_game_over(move, player_moves, which_player)
         return move, player_moves
@@ -168,7 +166,7 @@ def minimax(current_depth: int, moves_left: int, first_player_moves: list, secon
 
 def game():
     #creating a board
-    global st_row, nd_row, rd_row, board
+    global st_row, nd_row, rd_row, board, possible_moves
     st_row = [1,2,3]
     nd_row = [4,5,6]
     rd_row = [7,8,9]
@@ -180,6 +178,7 @@ def game():
 
     #keep track of how many moves left
     m = 9
+    possible_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     #letting player decide vs who he wants to play
     option = 0
@@ -202,9 +201,5 @@ def game():
             updating_board(nd_player_moves[-1], 2)
             m -=1
             is_game_over(m, nd_player_moves, 2)
-
-        #handling input from user
-        #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
-        #!!!CREATE BETTER CHECKING FOR INPUT FROM USER!!!
 
 game()
