@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, time
 
 #printing out a board
 def printing_out_board():
@@ -59,13 +59,28 @@ def is_game_over(moves_left: int, player_moves: list, which_player: int):
     
 #handling player movement
 def player(player_moves: list, which_player: int, move: int):
-        printing_out_board()
         if(which_player==1):
             charackter = "O"
         else:
             charackter = "X"
         #taking input from players
-        player = int(input("Player"+ str(which_player) + " - Enter where would you like to put "+charackter+":"))
+        possible_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        while True:
+            try:
+                printing_out_board()
+                player = int(input("Player"+ str(which_player) + " - Enter where would you like to put "+charackter+":"))
+                if player in possible_moves:
+                    break
+                else:
+                    os.system('cls')
+                    print ("You can't make that move")
+                    time.sleep(2)
+
+            except ValueError:
+                os.system('cls')
+                print("Please input valid number for charackter to place")
+                time.sleep(2)
+        player = int(player)   
         #!!!TO DO checking input from the player
         #keep track of player moves
         player_moves.append(player)
@@ -167,9 +182,15 @@ def game():
     m = 9
 
     #letting player decide vs who he wants to play
-    option = int(input("Would like to play with other player(1) or computer(2)?"))
+    option = 0
+    try:
+        option = int(input("Would like to play with other player(1) or computer(2)?"))
+    except ValueError:
+        while (option != "1" and option != "2"):
+            os.system('cls')
+            option = input("Please, input valid number.\n- 1 to play vs other player \n- 2 to play vs computer\n:")
 
-    if(option==1):
+    if(int(option)==1):
     #endless loop for a game
         while True:
             m, st_player_moves = player(st_player_moves, 1, m)
@@ -185,11 +206,5 @@ def game():
         #handling input from user
         #!!!CREATE CHECKING IF CHARACKTER IS ALREADY THERE!!!
         #!!!CREATE BETTER CHECKING FOR INPUT FROM USER!!!
-        #diff = True
-        #while diff:
-        #    if(player_one!=player_two and 0<player_one<10 and 0<player_two<10):
-        #        diff = False
-        #    else:
-        #        player_two = int(input("Player2 - Enter again where would you like to put X:"))
 
 game()
